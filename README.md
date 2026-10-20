@@ -7,7 +7,8 @@
 <p align="center">A macOS menu bar app that shows which apps are keeping your Mac awake.</p>
 
 <p align="center">
-  <img src="docs/screenshot.png" width="560" alt="Sandman window: Claude prevents sleep, caffeinate keeps the display on">
+  <img src="docs/window.png" width="480" alt="Sandman window, Now tab: sharingd prevents sleep for Handoff">
+  <img src="docs/menu.png" width="335" alt="Sandman menu bar dropdown: sharingd keeping the Mac awake, with Open at Login switched on">
 </p>
 
 ## Why
