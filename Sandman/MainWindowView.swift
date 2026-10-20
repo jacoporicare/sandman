@@ -7,48 +7,73 @@
 
 import SwiftUI
 
-/// The full list of everything keeping the Mac awake.
+enum MainWindowTab: String {
+    case now, history
+}
+
+/// Everything keeping the Mac awake right now, and what kept it awake while you were away.
 struct MainWindowView: View {
     let monitor: AssertionMonitor
+    let recorder: AbsenceRecorder
+    @AppStorage("mainWindowTab") private var tab = MainWindowTab.now
     @AppStorage("showBackgroundActivity") private var showBackground = false
 
     private var visibleBackground: [Blocker] { showBackground ? monitor.background : [] }
 
     var body: some View {
         Group {
-            if monitor.blockers.isEmpty && visibleBackground.isEmpty && !monitor.isUnavailable {
-                ContentUnavailableView(
-                    "Your Mac can sleep",
-                    systemImage: "lightbulb",
-                    description: Text("Nothing is keeping it awake. Apps that prevent sleep will show up here.")
-                )
-            } else {
-                VStack(spacing: 0) {
-                    StatusHeader(monitor: monitor, symbolSize: 30)
-                        .padding()
-                    Divider()
-                    List {
-                        if !monitor.blockers.isEmpty {
-                            Section("Keeping your Mac awake") {
-                                ForEach(monitor.blockers) { BlockerRow(blocker: $0) }
-                            }
-                        }
-                        if !visibleBackground.isEmpty {
-                            Section("Background activity") {
-                                ForEach(visibleBackground) { BlockerRow(blocker: $0) }
-                            }
-                        }
-                    }
-                    .listStyle(.inset)
-                }
+            switch tab {
+            case .now: now
+            case .history: HistoryView(recorder: recorder)
             }
         }
         .frame(minWidth: 480, minHeight: 320)
         .toolbar {
-            Toggle(isOn: $showBackground) {
-                Label("Background Activity", systemImage: "gearshape.2")
+            ToolbarItem(placement: .principal) {
+                Picker("View", selection: $tab) {
+                    Text("Now").tag(MainWindowTab.now)
+                    Text("History").tag(MainWindowTab.history)
+                }
+                .pickerStyle(.segmented)
             }
-            .help("Also show system activity and short-lived blockers that can’t keep your Mac awake on their own")
+            if tab == .now {
+                ToolbarItem {
+                    Toggle(isOn: $showBackground) {
+                        Label("Background Activity", systemImage: "gearshape.2")
+                    }
+                    .help("Also show system activity and short-lived blockers that can’t keep your Mac awake on their own")
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var now: some View {
+        if monitor.blockers.isEmpty && visibleBackground.isEmpty && !monitor.isUnavailable {
+            ContentUnavailableView(
+                "Your Mac can sleep",
+                systemImage: "lightbulb",
+                description: Text("Nothing is keeping it awake. Apps that prevent sleep will show up here.")
+            )
+        } else {
+            VStack(spacing: 0) {
+                StatusHeader(monitor: monitor, symbolSize: 30)
+                    .padding()
+                Divider()
+                List {
+                    if !monitor.blockers.isEmpty {
+                        Section("Keeping your Mac awake") {
+                            ForEach(monitor.blockers) { BlockerRow(blocker: $0) }
+                        }
+                    }
+                    if !visibleBackground.isEmpty {
+                        Section("Background activity") {
+                            ForEach(visibleBackground) { BlockerRow(blocker: $0) }
+                        }
+                    }
+                }
+                .listStyle(.inset)
+            }
         }
     }
 }

@@ -24,6 +24,7 @@ Your Mac didn't go to sleep, or the display stayed on all night, and you don't k
 - **The real culprit, not the messenger.** Helper processes are grouped under their app (Chrome Helper → Chrome), and blockers that macOS services hold for another app are shown under that app: Spotify, not `coreaudiod`.
 - **Readable reasons.** `com.apple.audio.BuiltInSpeakerDevice.context.preventuseridlesleep` becomes "Playing audio on MacBook Pro Speakers".
 - **No flicker.** Apps often block sleep for a few seconds while finishing background work. That can't keep your Mac awake, so a blocker only counts once it has lasted 10 seconds. Shorter ones are listed under Background Activity.
+- **While you were away.** When you come back after 15 minutes or more, the dropdown shows what happened: how long your Mac was awake and asleep, which apps kept it awake and for how long, and how often macOS woke it in the background (network activity, maintenance, notifications). The window's History tab keeps one entry per absence for 30 days.
 - **Quit or force quit** the culprit from the row's ⋯ menu, its context menu, or by swiping left. Sandman only offers this for regular apps and processes you started, never for macOS's own services.
 
 ## Requirements
@@ -56,6 +57,8 @@ Each assertion is attributed to an app:
 - The owning process's executable path is mapped to its outermost `.app` bundle, so helpers fold into their app.
 - `AssertionOnBehalfOfPID` is followed when a service such as `coreaudiod` or `runningboardd` holds the assertion for another app.
 - powerd's own "Prevent sleep while display is on" assertion only mirrors the display state, so it's listed as background activity.
+
+For history, Sandman watches how long it's been since your last keyboard or mouse input, which needs no permission. Background wake-ups and their causes come from the macOS power log (`pmset -g log`), which keeps about a week. History is stored in `~/Library/Application Support/org.ricar.Sandman/history.json`.
 
 The app isn't sandboxed because it needs to look at other processes.
 

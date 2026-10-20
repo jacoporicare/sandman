@@ -12,8 +12,11 @@ import SwiftUI
 /// The panel that drops down from the menu bar icon.
 struct MenuBarView: View {
     let monitor: AssertionMonitor
+    let recorder: AbsenceRecorder
     let loginItem: LoginItem
     @Environment(\.openWindow) private var openWindow
+    @AppStorage("dismissedAbsence") private var dismissedAbsence = ""
+    @AppStorage("mainWindowTab") private var tab = MainWindowTab.now
 
     private static let maxRowsWithoutScrolling = 7
 
@@ -21,6 +24,16 @@ struct MenuBarView: View {
         VStack(alignment: .leading, spacing: 0) {
             StatusHeader(monitor: monitor)
                 .padding(12)
+
+            if let absence = recorder.history.first, absence.id.uuidString != dismissedAbsence {
+                AbsenceCard(absence: absence) {
+                    dismissedAbsence = absence.id.uuidString
+                } onShowHistory: {
+                    tab = .history
+                    openMainWindow()
+                }
+                .padding([.horizontal, .bottom], 12)
+            }
 
             if !monitor.blockers.isEmpty {
                 Divider()

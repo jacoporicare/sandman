@@ -106,10 +106,15 @@ struct ElapsedText: View {
 
     static func describe(_ interval: TimeInterval, prefix: String) -> String {
         guard interval >= 60 else { return "just now" }
-        let duration = Duration.seconds(interval)
-            .formatted(.units(allowed: [.days, .hours, .minutes], width: .abbreviated, maximumUnitCount: 2))
-        return prefix + duration
+        return prefix + formatDuration(interval)
     }
+}
+
+/// "<1 min", "40 min", "3 hr, 30 min".
+func formatDuration(_ interval: TimeInterval) -> String {
+    guard interval >= 60 else { return "<1 min" }
+    return Duration.seconds(interval)
+        .formatted(.units(allowed: [.days, .hours, .minutes], width: .abbreviated, maximumUnitCount: 2))
 }
 
 /// "Show in Finder", "Quit" and "Force Quit…", for context menus and the row menu.

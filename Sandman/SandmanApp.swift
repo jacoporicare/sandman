@@ -11,19 +11,26 @@ import SwiftUI
 @main
 struct SandmanApp: App {
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
-    @State private var monitor = AssertionMonitor()
+    @State private var monitor: AssertionMonitor
+    @State private var recorder: AbsenceRecorder
     @State private var loginItem = LoginItem()
+
+    init() {
+        let monitor = AssertionMonitor()
+        _monitor = State(initialValue: monitor)
+        _recorder = State(initialValue: AbsenceRecorder(blockers: { monitor.blockers }))
+    }
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarView(monitor: monitor, loginItem: loginItem)
+            MenuBarView(monitor: monitor, recorder: recorder, loginItem: loginItem)
         } label: {
             MenuBarLabel(monitor: monitor, appDelegate: appDelegate)
         }
         .menuBarExtraStyle(.window)
 
         Window("Sandman", id: "main") {
-            MainWindowView(monitor: monitor)
+            MainWindowView(monitor: monitor, recorder: recorder)
         }
         .defaultSize(width: 560, height: 440)
         // Opened at login, Sandman should sit quietly in the menu bar.
