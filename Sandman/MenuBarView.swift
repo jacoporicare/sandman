@@ -6,11 +6,13 @@
 //
 
 import AppKit
+import ServiceManagement
 import SwiftUI
 
 /// The panel that drops down from the menu bar icon.
 struct MenuBarView: View {
     let monitor: AssertionMonitor
+    let loginItem: LoginItem
     @Environment(\.openWindow) private var openWindow
 
     private static let maxRowsWithoutScrolling = 7
@@ -32,11 +34,13 @@ struct MenuBarView: View {
             Divider()
             VStack(spacing: 0) {
                 MenuItemButton(title: "Open Sandman", shortcut: "o", action: openMainWindow)
+                LoginItemRow(loginItem: loginItem)
                 MenuItemButton(title: "Quit Sandman", shortcut: "q") { NSApp.terminate(nil) }
             }
             .padding(6)
         }
         .frame(width: 320)
+        .onAppear { loginItem.refresh() }
     }
 
     private var rows: some View {
@@ -88,6 +92,36 @@ private struct CompactBlockerRow: View {
         .padding(.horizontal, 6)
         .padding(.vertical, 4)
         .contentShape(.rect)
+    }
+}
+
+/// "Open at Login" with a switch, plus a way out when System Settings is holding it for approval.
+private struct LoginItemRow: View {
+    let loginItem: LoginItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("Open at Login")
+                Spacer()
+                Toggle("Open at Login", isOn: Binding(get: { loginItem.isEnabled }, set: { loginItem.setEnabled($0) }))
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                    .labelsHidden()
+            }
+            if loginItem.needsApproval {
+                Button("Allow Sandman in Login Items…") { SMAppService.openSystemSettingsLoginItems() }
+                    .buttonStyle(.link)
+                    .font(.caption)
+            }
+            if let errorMessage = loginItem.errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
     }
 }
 

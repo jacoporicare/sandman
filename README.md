@@ -45,7 +45,7 @@ xcodebuild -project Sandman.xcodeproj -scheme Sandman -configuration Release -de
 ditto build/DerivedData/Build/Products/Release/Sandman.app /Applications/Sandman.app
 ```
 
-To start Sandman when you log in, add it under **System Settings › General › Login Items**.
+To start Sandman when you log in, turn on **Open at Login** in its menu bar dropdown. It then starts quietly in the menu bar; open Sandman again (from Spotlight or Finder) to show its window.
 
 ## How it works
 
