@@ -60,3 +60,7 @@ Each assertion is attributed to an app:
 The app isn't sandboxed because it needs to look at other processes.
 
 The app icon is drawn in code; see [`Design/AppIcon.swift`](Design/AppIcon.swift).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
