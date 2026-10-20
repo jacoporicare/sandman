@@ -9,9 +9,21 @@ import SwiftUI
 
 @main
 struct SandmanApp: App {
+    @State private var monitor = AssertionMonitor()
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra {
+            MenuBarView(monitor: monitor)
+        } label: {
+            Image(systemName: monitor.statusSymbol)
+                .accessibilityLabel(monitor.statusTitle)
         }
+        .menuBarExtraStyle(.window)
+
+        Window("Sandman", id: "main") {
+            MainWindowView(monitor: monitor)
+        }
+        .defaultSize(width: 560, height: 440)
+        .defaultLaunchBehavior(.presented)
     }
 }
