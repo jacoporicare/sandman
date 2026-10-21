@@ -78,6 +78,12 @@ struct SleepAssertion: Identifiable, Equatable {
     private static func readableName(_ raw: String, resources: [String]) -> String {
         if raw.hasPrefix("com.apple.audio.") { return audioName(resources: resources) }
 
+        // powerd keeps the display on for 5 more minutes whenever an app releases a display assertion,
+        // so it doesn't go dark the moment a video ends. Often the only trace of sub-second assertions.
+        if raw == "com.apple.powermanagement.delayDisplayOff" {
+            return "Grace period after an app stopped keeping the display on"
+        }
+
         // runningboardd: "app<application.net.whatsapp.WhatsApp.…>…:Shared Background Assertion 3474 for
         // net.whatsapp.WhatsApp(FinishTask)" — an app finishing work after you switched away from it.
         if raw.hasPrefix("app<"), let colon = raw.firstIndex(of: ":") {
