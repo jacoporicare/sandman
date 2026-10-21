@@ -8,6 +8,16 @@
 import AppKit
 import SwiftUI
 
+/// One color per state, for the bulb, the window's labels and History's timelines.
+enum StateColor {
+    /// The Mac can sleep, or was asleep: black or white. Opaque, so a timeline's awake color doesn't show through.
+    static let sleep = Color(.sleep)
+    /// Something keeps the Mac awake.
+    static let awake = Color.indigo
+    /// Something keeps the display on. Darker in light mode, so it reads on light menu glass.
+    static let displayOn = Color(.displayOn)
+}
+
 extension SleepAssertion.Kind {
     var label: String {
         switch self {
@@ -27,8 +37,8 @@ extension SleepAssertion.Kind {
 
     var tint: Color {
         switch self {
-        case .display: .displayOn
-        case .system: .indigo
+        case .display: StateColor.displayOn
+        case .system: StateColor.awake
         case .background: .secondary
         }
     }
@@ -41,10 +51,9 @@ extension AssertionMonitor {
         return keepsDisplayOn ? SleepAssertion.Kind.display.symbol : SleepAssertion.Kind.system.symbol
     }
 
-    /// Black or white while the Mac can sleep, then the color of what's keeping it awake.
     var statusTint: Color {
-        if blockers.isEmpty { return .primary }
-        return keepsDisplayOn ? SleepAssertion.Kind.display.tint : SleepAssertion.Kind.system.tint
+        if blockers.isEmpty { return StateColor.sleep }
+        return keepsDisplayOn ? StateColor.displayOn : StateColor.awake
     }
 
     var statusTitle: String {

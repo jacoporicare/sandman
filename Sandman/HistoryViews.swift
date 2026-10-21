@@ -9,10 +9,6 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-private let awakeColor = SleepAssertion.Kind.system.tint
-private let displayOnColor = SleepAssertion.Kind.display.tint
-private let asleepColor = Color.primary
-
 /// "While you were away" in the menu bar dropdown, for the most recent absence.
 struct AbsenceCard: View {
     let absence: Absence
@@ -104,13 +100,13 @@ struct AbsenceSummary: View {
             if isDetailed {
                 lanes
             } else {
-                TimelineBar(bounds: bounds, segments: absence.sleeps, segmentColor: asleepColor, background: awakeColor.opacity(0.75))
+                TimelineBar(bounds: bounds, segments: absence.sleeps, segmentColor: StateColor.sleep, background: StateColor.awake.opacity(0.75))
                     .frame(height: 8)
             }
 
             HStack(spacing: 12) {
-                legend("Awake", absence.awake, awakeColor)
-                legend("Asleep", absence.asleep, asleepColor)
+                legend("Awake", absence.awake, StateColor.awake)
+                legend("Asleep", absence.asleep, StateColor.sleep)
             }
             .font(.caption)
 
@@ -136,7 +132,7 @@ struct AbsenceSummary: View {
                     Image(systemName: "laptopcomputer")
                 }
                 .frame(width: 140, alignment: .leading)
-                TimelineBar(bounds: bounds, segments: absence.sleeps, segmentColor: asleepColor, background: awakeColor.opacity(0.75))
+                TimelineBar(bounds: bounds, segments: absence.sleeps, segmentColor: StateColor.sleep, background: StateColor.awake.opacity(0.75))
                     .frame(height: 10)
                 Text(formatDuration(absence.awake))
                     .foregroundStyle(.secondary)
@@ -152,7 +148,7 @@ struct AbsenceSummary: View {
                     }
                     .frame(width: 140, alignment: .leading)
                     .help(culprit.reasons.joined(separator: "\n"))
-                    TimelineBar(bounds: bounds, segments: culprit.intervals, segmentColor: culprit.keepsDisplayOn ? displayOnColor : awakeColor, background: Color.secondary.opacity(0.15))
+                    TimelineBar(bounds: bounds, segments: culprit.intervals, segmentColor: culprit.keepsDisplayOn ? StateColor.displayOn : StateColor.awake, background: Color.secondary.opacity(0.15))
                         .frame(height: 10)
                     Text(formatDuration(culprit.duration))
                         .foregroundStyle(.secondary)
