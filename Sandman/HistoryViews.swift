@@ -9,8 +9,9 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-private let awakeColor = Color.orange
-private let asleepColor = Color.indigo
+private let awakeColor = SleepAssertion.Kind.system.tint
+private let displayOnColor = SleepAssertion.Kind.display.tint
+private let asleepColor = Color.primary
 
 /// "While you were away" in the menu bar dropdown, for the most recent absence.
 struct AbsenceCard: View {
@@ -151,7 +152,7 @@ struct AbsenceSummary: View {
                     }
                     .frame(width: 140, alignment: .leading)
                     .help(culprit.reasons.joined(separator: "\n"))
-                    TimelineBar(bounds: bounds, segments: culprit.intervals, segmentColor: culprit.keepsDisplayOn ? .blue : awakeColor, background: Color.secondary.opacity(0.15))
+                    TimelineBar(bounds: bounds, segments: culprit.intervals, segmentColor: culprit.keepsDisplayOn ? displayOnColor : awakeColor, background: Color.secondary.opacity(0.15))
                         .frame(height: 10)
                     Text(formatDuration(culprit.duration))
                         .foregroundStyle(.secondary)

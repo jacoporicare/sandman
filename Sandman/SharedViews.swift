@@ -27,8 +27,8 @@ extension SleepAssertion.Kind {
 
     var tint: Color {
         switch self {
-        case .display: .blue
-        case .system: .orange
+        case .display: .displayOn
+        case .system: .indigo
         case .background: .secondary
         }
     }
@@ -39,6 +39,12 @@ extension AssertionMonitor {
         if isUnavailable { return "exclamationmark.triangle" }
         if blockers.isEmpty { return "lightbulb" }
         return keepsDisplayOn ? SleepAssertion.Kind.display.symbol : SleepAssertion.Kind.system.symbol
+    }
+
+    /// Black or white while the Mac can sleep, then the color of what's keeping it awake.
+    var statusTint: Color {
+        if blockers.isEmpty { return .primary }
+        return keepsDisplayOn ? SleepAssertion.Kind.display.tint : SleepAssertion.Kind.system.tint
     }
 
     var statusTitle: String {
@@ -65,7 +71,7 @@ struct StatusHeader: View {
             Image(systemName: monitor.statusSymbol)
                 .font(.system(size: symbolSize))
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(monitor.blockers.isEmpty ? Color.indigo : Color.orange)
+                .foregroundStyle(monitor.statusTint)
                 .frame(width: symbolSize + 12)
                 .contentTransition(.symbolEffect(.replace))
             VStack(alignment: .leading, spacing: 2) {

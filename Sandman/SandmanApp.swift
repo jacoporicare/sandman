@@ -31,6 +31,12 @@ struct SandmanApp: App {
 
         Window("Sandman", id: "main") {
             MainWindowView(monitor: monitor, recorder: recorder)
+                // Sandman lives in the menu bar, but while its window is open it's in the Dock and ⌘-Tab like any app.
+                .onAppear {
+                    NSApp.setActivationPolicy(.regular)
+                    NSApp.activate()
+                }
+                .onDisappear { NSApp.setActivationPolicy(.accessory) }
         }
         .defaultSize(width: 560, height: 440)
         // Opened at login, Sandman should sit quietly in the menu bar.
